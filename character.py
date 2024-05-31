@@ -1,10 +1,14 @@
 # ------------ imports ------------
-from weapon import fists
+from abc import ABC
+
+from weapon import fists, jaws, claws, short_bow, iron_sword
 from health_bar import HealthBar
 
 
 # ------------ parent class setup ------------
-class Character:
+class Character(ABC):
+    health_bar: HealthBar
+
     def __init__(self,
                  name: str,
                  health: int,
@@ -15,12 +19,28 @@ class Character:
 
         self.weapon = fists
 
+    @property
+    def alive(self) -> bool:
+        return self.health > 0
+
     def attack(self, target) -> None:
-        target.health -= self.weapon.damage
-        target.health = max(target.health, 0)
-        target.health_bar.update()
-        print(f"{self.name} dealt {self.weapon.damage} damage to "
-              f"{target.name} with {self.weapon.name}")
+        # skip the attack if own health reached zero
+        if not self.alive:
+            print(f"{self.name} has fallen in battle...")
+            return
+
+        # calculate base damage
+        dmg = self.weapon.damage
+
+        # withdraw damage from enemy health
+        target.get_damaged(dmg, self)
+
+    def get_damaged(self, dmg: int, attacker) -> None:
+        self.health -= dmg
+        self.health = max(self.health, 0)
+        self.health_bar.update()
+        print(f"{attacker.name} dealt {dmg} damage to "
+              f"{self.name} with {attacker.weapon.name}")
 
 
 # ------------ subclass setup ------------
@@ -54,3 +74,13 @@ class Enemy(Character):
         self.weapon = weapon
 
         self.health_bar = HealthBar(self, color="red")
+
+        enemies.append(self)
+
+
+enemies = []
+rat = Enemy("Rat", 12, claws)
+slime = Enemy("Slime", 20, jaws)
+wolf = Enemy("Wolf", 30, jaws)
+goblin = Enemy("Goblin", 40, short_bow)
+ork = Enemy("Ork", 60, iron_sword)

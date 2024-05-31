@@ -4,7 +4,7 @@ class Weapon:
                  name: str,
                  weapon_type: str,
                  damage: int,
-                 value: int
+                 value: int = 0
                  ) -> None:
         self.name = name
         self.weapon_type = weapon_type
@@ -25,5 +25,12 @@ short_bow = Weapon(name="Short Bow",
 
 fists = Weapon(name="Fists",
                weapon_type="blunt",
-               damage=2,
-               value=0)
+               damage=2)
+
+claws = Weapon(name="Claws",
+               weapon_type="sharp",
+               damage=3)
+
+jaws = Weapon(name="Jaws",
+              weapon_type="sharp",
+              damage=4)
